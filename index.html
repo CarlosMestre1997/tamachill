@@ -205,7 +205,7 @@
 
   <button id="restartBtn" class="restart" onclick="restartGame()">Start Again</button>
 
-  <button class="share">Share</button>
+  <button class="share" id="shareBtn">Share</button>
 
   <script>
     let stats = { thirst: 100, fun: 100, chill: 100 };
@@ -277,7 +277,8 @@
 
         title.textContent = "GAME OVER";
         const livingTime = Math.floor((Date.now() - startTime) / 1000);
-        characterBox.innerHTML = "";
+
+        characterBox.style.display = "none";
         counter.style.display = "block";
         counter.textContent = `Survived ${livingTime} seconds`;
 
@@ -294,9 +295,10 @@
       gameOver = false;
       startTime = Date.now();
       title.textContent = "TAMACHILL";
-      tama.src = "assets/idle.gif";
 
-      characterBox.innerHTML = '<img id="tama" src="assets/idle.gif" alt="Tamagotchi">';
+      tama.src = "assets/idle.gif";
+      characterBox.style.display = "flex";
+
       counter.style.display = "none";
       actionButtons.style.display = "flex";
       statsBox.style.display = "block";
@@ -305,8 +307,21 @@
       statInterval = setInterval(decreaseStats, 2000);
     }
 
+    // 📌 Share button logic
+    document.getElementById("shareBtn").addEventListener("click", async () => {
+      const url = "https://carlosmestre1997.github.io/tamachill/";
+      try {
+        await navigator.clipboard.writeText(url);
+        showMessage("Game link copied!");
+      } catch (err) {
+        showMessage("Could not copy link");
+      }
+    });
+
     renderStats();
   </script>
 </body>
 </html>
+
+
 
