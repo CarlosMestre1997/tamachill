@@ -176,7 +176,7 @@
   <h1 id="title">TAMACHILL</h1>
 
   <div class="character" id="characterBox">
-    <img id="tama" src="/assets/idle.gif" alt="Tamagotchi">
+    <img id="tama" src="assets/idle.gif" alt="Tamagotchi">
   </div>
   <div id="counter" class="counter" style="display:none;"></div>
 
@@ -250,23 +250,23 @@
       renderStats();
 
       if (stat === "thirst") {
-        tama.src = "/assets/drink.gif";
+        tama.src = "assets/drink.gif";
         showMessage("Drinking...");
       } else if (stat === "fun") {
         const options = [
-          { gif: "/assets/bike.gif", msg: "Went biking" },
-          { gif: "/assets/date.gif", msg: "On a date" }
+          { gif: "assets/bike.gif", msg: "Went biking" },
+          { gif: "assets/date.gif", msg: "On a date" }
         ];
         const choice = options[Math.floor(Math.random() * options.length)];
         tama.src = choice.gif;
         showMessage(choice.msg);
       } else if (stat === "chill") {
-        tama.src = "/assets/chill.gif";
+        tama.src = "assets/chill.gif";
         showMessage("Chilling...");
       }
 
       setTimeout(() => {
-        tama.src = "/assets/idle.gif";
+        tama.src = "assets/idle.gif";
       }, 3000);
     }
 
@@ -294,9 +294,9 @@
       gameOver = false;
       startTime = Date.now();
       title.textContent = "TAMACHILL";
-      tama.src = "/assets/idle.gif";
+      tama.src = "assets/idle.gif";
 
-      characterBox.innerHTML = '<img id="tama" src="/assets/idle.gif" alt="Tamagotchi">';
+      characterBox.innerHTML = '<img id="tama" src="assets/idle.gif" alt="Tamagotchi">';
       counter.style.display = "none";
       actionButtons.style.display = "flex";
       statsBox.style.display = "block";
@@ -309,3 +309,4 @@
   </script>
 </body>
 </html>
+
