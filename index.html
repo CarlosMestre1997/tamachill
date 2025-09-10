@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tamachill</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      background: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #ffffff !important;
+      color: #000000;
+      font-family: monospace, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 32px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .character {
+      width: 200px;
+      height: 200px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff !important;
+    }
+
+    .character img {
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      background: #ffffff !important;
+    }
+
+    .counter {
+      font-size: 14px;
+      margin-top: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .message {
+      min-height: 20px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      text-transform: uppercase;
+    }
+
+    .stats {
+      width: 300px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      margin: 8px 0;
+    }
+
+    .stat label {
+      font-size: 12px;
+      display: block;
+      margin-bottom: 2px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .bar {
+      width: 100%;
+      height: 8px;
+      background: #000000;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      background: #ffffff;
+      border: 1px solid #000000;
+      width: 100%;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 4px 8px;
+      border: 1px solid #000000;
+      border-radius: 0;
+      cursor: pointer;
+      background: #ffffff !important;
+      color: #000000;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: monospace;
+    }
+
+    button:hover,
+    button:focus {
+      background: #000000 !important;
+      color: #ffffff !important;
+      outline: none;
+    }
+
+    .share {
+      font-size: 10px;
+      padding: 4px 8px;
+      position: fixed;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .restart {
+      margin-top: 20px;
+      display: none;
+    }
+
+    /* Mobile adjustments */
+    @media screen and (max-width: 600px) {
+      .character {
+        width: 150px;
+        height: 150px;
+      }
+
+      .character img {
+        width: 150px;
+        height: 150px;
+      }
+
+      .stats {
+        width: 250px;
+      }
+
+      .buttons {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      button {
+        padding: 6px;
+        font-size: 14px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 id="title">TAMACHILL</h1>
+
+  <div class="character" id="characterBox">
+    <img id="tama" src="/assets/idle.gif" alt="Tamagotchi">
+  </div>
+  <div id="counter" class="counter" style="display:none;"></div>
+
+  <div id="message" class="message"></div>
+
+  <div class="stats" id="statsBox">
+    <div class="stat">
+      <label>Thirst</label>
+      <div class="bar"><div class="fill" id="thirst"></div></div>
+    </div>
+    <div class="stat">
+      <label>Fun</label>
+      <div class="bar"><div class="fill" id="fun"></div></div>
+    </div>
+    <div class="stat">
+      <label>Chill</label>
+      <div class="bar"><div class="fill" id="chill"></div></div>
+    </div>
+  </div>
+
+  <div class="buttons" id="actionButtons">
+    <button onclick="increaseStat('thirst')">Drink</button>
+    <button onclick="increaseStat('fun')">Go Out</button>
+    <button onclick="increaseStat('chill')">Chill</button>
+  </div>
+
+  <button id="restartBtn" class="restart" onclick="restartGame()">Start Again</button>
+
+  <button class="share">Share</button>
+
+  <script>
+    let stats = { thirst: 100, fun: 100, chill: 100 };
+    const tama = document.getElementById("tama");
+    const message = document.getElementById("message");
+    const title = document.getElementById("title");
+    const counter = document.getElementById("counter");
+    const characterBox = document.getElementById("characterBox");
+    const actionButtons = document.getElementById("actionButtons");
+    const statsBox = document.getElementById("statsBox");
+    const restartBtn = document.getElementById("restartBtn");
+
+    let startTime = Date.now();
+    let gameOver = false;
+    let statInterval = setInterval(decreaseStats, 2000);
+
+    function renderStats() {
+      for (let key in stats) {
+        const fill = document.getElementById(key);
+        fill.style.width = stats[key] + "%";
+      }
+    }
+
+    function decreaseStats() {
+      if (gameOver) return;
+      const keys = Object.keys(stats);
+      const randomKey = keys[Math.floor(Math.random() * keys.length)];
+      stats[randomKey] = Math.max(0, stats[randomKey] - 5);
+      renderStats();
+      checkGameOver();
+    }
+
+    function showMessage(text) {
+      message.textContent = text;
+      message.style.opacity = 1;
+      setTimeout(() => { message.style.opacity = 0; }, 2000);
+    }
+
+    function increaseStat(stat) {
+      if (gameOver) return;
+      stats[stat] = Math.min(100, stats[stat] + 20);
+      renderStats();
+
+      if (stat === "thirst") {
+        tama.src = "/assets/drink.gif";
+        showMessage("Drinking...");
+      } else if (stat === "fun") {
+        const options = [
+          { gif: "/assets/bike.gif", msg: "Went biking" },
+          { gif: "/assets/date.gif", msg: "On a date" }
+        ];
+        const choice = options[Math.floor(Math.random() * options.length)];
+        tama.src = choice.gif;
+        showMessage(choice.msg);
+      } else if (stat === "chill") {
+        tama.src = "/assets/chill.gif";
+        showMessage("Chilling...");
+      }
+
+      setTimeout(() => {
+        tama.src = "/assets/idle.gif";
+      }, 3000);
+    }
+
+    function checkGameOver() {
+      if (stats.thirst === 0 && stats.fun === 0 && stats.chill === 0) {
+        gameOver = true;
+        clearInterval(statInterval);
+
+        title.textContent = "GAME OVER";
+        const livingTime = Math.floor((Date.now() - startTime) / 1000);
+        characterBox.innerHTML = "";
+        counter.style.display = "block";
+        counter.textContent = `Survived ${livingTime} seconds`;
+
+        actionButtons.style.display = "none";
+        statsBox.style.display = "none";
+        restartBtn.style.display = "block";
+      }
+    }
+
+    function restartGame() {
+      stats = { thirst: 100, fun: 100, chill: 100 };
+      renderStats();
+
+      gameOver = false;
+      startTime = Date.now();
+      title.textContent = "TAMACHILL";
+      tama.src = "/assets/idle.gif";
+
+      characterBox.innerHTML = '<img id="tama" src="/assets/idle.gif" alt="Tamagotchi">';
+      counter.style.display = "none";
+      actionButtons.style.display = "flex";
+      statsBox.style.display = "block";
+      restartBtn.style.display = "none";
+
+      statInterval = setInterval(decreaseStats, 2000);
+    }
+
+    renderStats();
+  </script>
+</body>
+</html>
